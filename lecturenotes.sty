@@ -1,0 +1,258 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{lecturenotes}[2024/12/01 Lecture Notes Package]
+
+\RequirePackage{graphicx} % Required for inserting images
+\RequirePackage[useregional]{datetime2} % Redefines \today to be UK date
+\RequirePackage[fleqn]{amsmath} % Extra maths things
+\RequirePackage{amsfonts} % Blackboard bold
+\RequirePackage{amssymb} % Certain maths symbols
+\RequirePackage[british]{babel}
+\RequirePackage{fancyhdr} % Control of header text
+\RequirePackage{tikz} % Diagramming
+\RequirePackage{tikz-3dplot} % 3D diagramming
+\usetikzlibrary{calc, positioning, bending, arrows.meta, shapes, shapes.geometric, shapes.misc}
+\RequirePackage[hidelinks]{hyperref} % Clickable links
+\RequirePackage{subfiles} % Splitting document into multiple files
+\RequirePackage{framed} % Typesetting of bars left of theorem-like environments
+\RequirePackage{xcolor} % Colours for bars
+\RequirePackage{etoolbox} % Extra things for dealing with environment arguments
+\RequirePackage{changepage} % Indented environments
+
+% Counters for environments
+\newcounter{theorem}\counterwithin{theorem}{chapter}
+\newcounter{corollary}\counterwithin{corollary}{theorem}
+\newcounter{example}\counterwithin{example}{chapter}
+\newcounter{subexample}\counterwithin{subexample}{example}
+\newcounter{subtheorem}\counterwithin{subtheorem}{theorem} % For propositions environment only
+\newcounter{definition}\counterwithin{definition}{chapter}
+\newcounter{case}[theorem]
+\newcounter{remark}
+
+
+% Definitions for left bar environment
+\setlength{\FrameSep}{0pt} % No gap between bar and content
+\setlength{\OuterFrameSep}{0pt} % No outer margin
+\definecolor{leftbarcolor}{rgb}{0, 0, 0} % Black left bar
+
+% Define an environment to position a bar left of text
+\newenvironment{leftbartext}
+{
+    \def\FrameCommand{{\color{leftbarcolor}\vrule width 1pt}\hspace{0.5em}}
+    \MakeFramed{\advance\hsize-\width \FrameRestore}
+}
+{
+    \vspace{0.5em} % Extend bar downwards
+    \endMakeFramed
+}
+
+% Define a template environment for theorem, proposition, etc.
+\newenvironment{theoremlike}[2][]
+{
+    \refstepcounter{theorem} % Increment the theorem counter
+    \par\medskip
+    \noindent
+    \underline{\textbf{#2 \thetheorem}\ifstrempty{#1}{}{ (#1)}:}
+    \ifstrempty{#1}{}{\vspace{0.2em}}
+    \begin{leftbartext} % Add a black bar on the left
+        \noindent
+}
+{
+    \end{leftbartext}
+    \vspace{-1.2em} % Ensure that the bottom line aligns with left line
+    \noindent\makebox[0.5cm][l]{\color{leftbarcolor}\rule{0.5cm}{1pt}} % Short horizontal bar
+    \par
+}
+
+\newenvironment{indentenvironment}[1][\parindent]{
+    \begin{adjustwidth}{#1}{}
+    \setlength{\parindent}{0pt}
+}{
+    \end{adjustwidth}
+    \medskip
+}
+
+% Theorem environment
+\newenvironment{theorem}[1][] {
+    \begin{theoremlike}[#1]{Theorem}
+}{
+    \end{theoremlike}
+}
+
+\newenvironment{proposition}[1][] {
+    \begin{theoremlike}[#1]{Proposition}
+}{
+    \end{theoremlike}
+}
+
+\newenvironment{lemma}[1][] {
+    \begin{theoremlike}[#1]{Lemma}
+}{
+    \end{theoremlike}
+}
+
+
+\newenvironment{corollary}[1][] 
+{
+    \refstepcounter{corollary}
+    \par\medskip
+    \noindent
+    \underline{\textbf{Corollary \thecorollary}\ifstrempty{#1}{}{ (#1)}:}
+    \ifstrempty{#1}{}{\vspace{0.2em}}
+    \begin{leftbartext} % Add a black bar on the left
+        \noindent
+}
+{
+    \end{leftbartext}
+}
+
+% The symbol to use to end a proof. use \renewcommand to change the symbol.
+\newcommand{\proofend}{$\Box$}
+
+% Define a proof environment
+\newenvironment{proof}[1][]
+{
+    \par\medskip
+    \noindent
+    \underline{\textbf{Proof}\ifstrempty{#1}{}{ (#1)}:}
+    \ifstrempty{#1}{}{\vspace{0.2em}} % Might not need
+    \begin{leftbartext} % Add a black bar on the left
+        \noindent
+}
+{
+    \proofend
+    \end{leftbartext}
+}
+
+\newenvironment{example}[1][]{
+    \refstepcounter{example}
+    \par\medskip
+    \noindent
+    \underline{\textbf{Example \theexample}\ifstrempty{#1}{}{ (#1)}:}
+    \begin{indentenvironment}
+}{
+    \end{indentenvironment}
+    \par
+}
+\newenvironment{definition}[1]{
+    \refstepcounter{definition}
+    \par\medskip
+    \noindent
+    \underline{\textbf{Definition \thedefinition} (#1):}
+    \begin{indentenvironment}
+}{
+    \end{indentenvironment}
+    \par
+}
+\newenvironment{warning}{
+    \par\medskip
+    \noindent
+    \underline{\textbf{Warning!}}
+    \begin{indentenvironment}
+}{
+    \end{indentenvironment}
+    \par
+}
+\newenvironment{examples}[2][]{
+    \begin{example}[#1]
+        #2
+        \begin{list}
+            {(\roman{subexample})} % Labelling format
+            {\usecounter{subexample}} % Define the counter
+}{
+        \end{list}
+    \end{example}
+}
+\newenvironment{propositions}[2][]{
+    \begin{proposition}[#1]
+        #2
+        \begin{list}
+            {(\roman{subtheorem})}
+            {\usecounter{subtheorem}}
+}{
+        \end{list}
+    \end{proposition}
+}
+\newenvironment{case}[1]{
+    \noindent
+    \refstepcounter{case}
+    \underline{\textbf{Case \Roman{case}}: #1}
+    \begin{indentenvironment}[2em]
+}{
+    \end{indentenvironment}
+    \par
+}
+
+\newenvironment{proofdirection}[2] { % #1 is the arrow in maths mode, e.g. $\Rightarrow, #2 is assumption.
+    \par\noindent
+    \underline{(#1): #2}
+    \begin{indentenvironment}[2em]
+}{
+    \end{indentenvironment}
+}
+
+\newenvironment{remark}{
+    \underline{\textbf{Remark:}}
+    \begin{indentenvironment}
+}{
+    \end{indentenvironment}
+}
+\newenvironment{remarks}{
+    \underline{\textbf{Remarks:}}
+    \setcounter{remark}{0}
+    \begin{list}
+        {(\roman{remark})}
+        {\usecounter{remark}}
+}{
+    \end{list}
+}
+
+\newcommand{\induction}[6]
+    % #1: Base case number (e.g. n=1)
+    % #2: Base case text
+    % #3: Assumption number (e.g. n=k)
+    % #4: Assumption text
+    % #5: Inductive proof number (e.g. n=k+1)
+    % #6: Inductive proof text
+{
+    Proceed by induction.\par\noindent
+    \underline{\textbf{Base case} (#1):}
+    \begin{indentenvironment}#2\end{indentenvironment}
+    \underline{\textbf{Assume} true for #3\ifstrempty{#4}{.}{:}}
+    \ifstrempty{#4}{\par\noindent}{\begin{indentenvironment}#4\end{indentenvironment}}
+    \underline{\textbf{RTP} true for #5:}
+    \begin{indentenvironment}#6\end{indentenvironment}
+}
+
+\newcommand{\nonexaminablesection}[1] {
+    \section{#1*}
+    *Note that the content of this section is \textbf{non-examinable}.\par
+}
+
+% Useful characters
+\newcommand{\contradiction}{\tikz[baseline, x=0.22em, y=0.22em, line width=0.032em]\draw (0,2.83)--(2.83,0) (0.71,3.54)--(3.54,0.71) (0,0.71)--(2.83,3.54) (0.71,0)--(3.54,2.83);}
+\newcommand{\tick}{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;} 
+\newcommand{\cross}{$\times$}
+
+% Blackboard bold characters (sets)
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+
+% Commands for vectors
+\renewcommand{\vec}[1]{\mathbf{#1}} % Redefine vector command to do boldface
+\newcommand{\dotprod}[2]{\ensuremath{\vec{#1} \cdot \vec{#2}}}
+\newcommand{\innerprod}[2]{\langle\vec{#1} | \vec{#2}\rangle}
+
+% Maths operators
+\DeclareMathOperator{\im}{im}
+\DeclareMathOperator{\hcf}{hcf}
+
+\newcommand{\subsetselect}[2]{\{#1~|~#2\}}
+
+
+% Page dimensions TODO: consider changing to geometry package
+\setlength{\headheight}{13.6pt}
+\setlength{\topmargin}{-1.6pt}
+\endinput
