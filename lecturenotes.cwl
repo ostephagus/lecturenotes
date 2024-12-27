@@ -38,6 +38,7 @@
 
 \begin{case}{condition}#/proof
 \begin{proofdirection}{arrow}{assumptiontext}#/proof
+\begin{subproof}{claim}#/proof
 
 \begin{remark}
 \begin{remarks}
@@ -60,6 +61,7 @@
 \innerprod{firstvector}{secondvector}#m
 
 \im{func}#m
-\hcf{numberpair}#m
+\hcf{arguments}#m
+\lcm{arguments}#m
 
 \subsetselect{element}{condition}#m

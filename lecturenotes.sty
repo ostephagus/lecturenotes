@@ -16,6 +16,7 @@
 \RequirePackage{framed} % Typesetting of bars left of theorem-like environments
 \RequirePackage{xcolor} % Colours for bars
 \RequirePackage{etoolbox} % Extra things for dealing with environment arguments
+\RequirePackage{xstring} % String manipulation for vec renewcommand
 \RequirePackage{changepage} % Indented environments
 
 % Counters for environments
@@ -25,7 +26,7 @@
 \newcounter{subexample}\counterwithin{subexample}{example}
 \newcounter{subtheorem}\counterwithin{subtheorem}{theorem} % For propositions environment only
 \newcounter{definition}\counterwithin{definition}{chapter}
-\newcounter{case}[theorem]
+\newcounter{case}[corollary]
 \newcounter{remark}
 
 
@@ -173,7 +174,7 @@
     \end{proposition}
 }
 \newenvironment{case}[1]{
-    \noindent
+    \par\noindent
     \refstepcounter{case}
     \underline{\textbf{Case \Roman{case}}: #1}
     \begin{indentenvironment}[2em]
@@ -185,6 +186,16 @@
 \newenvironment{proofdirection}[2] { % #1 is the arrow in maths mode, e.g. $\Rightarrow, #2 is assumption.
     \par\noindent
     \underline{(#1): #2}
+    \begin{indentenvironment}[2em]
+}{
+    \end{indentenvironment}
+}
+
+\newenvironment{subproof}[1] {
+    \par\noindent
+    \underline{\textbf{Claim:} #1}
+    \par\noindent
+    \underline{\textbf{Proof:}}
     \begin{indentenvironment}[2em]
 }{
     \end{indentenvironment}
@@ -241,13 +252,18 @@
 \newcommand{\C}{\mathbb{C}}
 
 % Commands for vectors
-\renewcommand{\vec}[1]{\mathbf{#1}} % Redefine vector command to do boldface
+\renewcommand{\vec}[1]{
+    \StrCut{#1}{_}\firstpart\secondpart
+    \textbf{\firstpart}_\secondpart
+}
+
 \newcommand{\dotprod}[2]{\ensuremath{\vec{#1} \cdot \vec{#2}}}
 \newcommand{\innerprod}[2]{\langle\vec{#1} | \vec{#2}\rangle}
 
 % Maths operators
 \DeclareMathOperator{\im}{im}
 \DeclareMathOperator{\hcf}{hcf}
+\DeclareMathOperator{\lcm}{lcm}
 
 \newcommand{\subsetselect}[2]{\{#1~|~#2\}}
 
