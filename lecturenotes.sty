@@ -242,6 +242,10 @@
     \section{#1*}
     *Note that the content of this section is \textbf{non-examinable}.\par
 }
+\newcommand{\nonexaminablesubsection}[1] {
+    \subsection{#1*}
+    *Note that the content of this subsection is \textbf{non-examinable}.\par
+}
 
 % Useful characters
 \newcommand{\contradiction}{\tikz[baseline, x=0.22em, y=0.22em, line width=0.032em]\draw (0,2.83)--(2.83,0) (0.71,3.54)--(3.54,0.71) (0,0.71)--(2.83,3.54) (0.71,0)--(3.54,2.83);}
@@ -263,6 +267,7 @@
 
 \newcommand{\dotprod}[2]{\ensuremath{\vec{#1} \cdot \vec{#2}}}
 \newcommand{\innerprod}[2]{\langle\vec{#1} | \vec{#2}\rangle}
+\newcommand{\nrm}[1]{\left\|#1\right\|}
 
 % Maths operators
 \DeclareMathOperator{\im}{im}
