@@ -60,7 +60,7 @@
     \ifstrempty{#1}{}{\vspace{0.2em}}
     
 
-    \edef\@currentlabelname{#2\LABELSEP#1} % TESTING
+    \protected@edef\@currentlabelname{#2\LABELSEP#1}
     \begin{leftbartext} % Add a black bar on the left
         \noindent
 }
@@ -107,7 +107,7 @@
     \ifstrempty{#1}{}{\vspace{0.2em}}
 
     \def\theoremtype{Corollary}
-    \edef\@currentlabelname{\theoremtype\LABELSEP#1}
+    \protected@edef\@currentlabelname{\theoremtype\LABELSEP#1}
 
     \begin{leftbartext} % Add a black bar on the left
         \noindent
@@ -140,7 +140,7 @@
     \noindent
     \underline{\textbf{Example \theexample}\ifstrempty{#1}{}{ (#1)}:}
     \def\theoremtype{Example}
-    \edef\@currentlabelname{\theoremtype\LABELSEP#1}
+    \protected@edef\@currentlabelname{\theoremtype\LABELSEP#1}
     \begin{indentenvironment}
 }{
     \end{indentenvironment}
@@ -152,7 +152,7 @@
     \noindent
     \underline{\textbf{Definition \thedefinition} (#1):}
     \def\theoremtype{Definition}
-    \edef\@currentlabelname{\theoremtype\LABELSEP#1}
+    \protected@edef\@currentlabelname{\theoremtype\LABELSEP#1}
     \begin{indentenvironment}
 }{
     \end{indentenvironment}
@@ -261,18 +261,22 @@
 \newcommand{\thmref}[1]{%
     %Expected input:
     %{6.12}{75}{Theorem|||Cayley-Hamilton Theorem}{theorem.6.12}{}
-    \expandafter\extractlabelnames
-    \expandafter{\csname r@#1\endcsname}{thmtype}{thmname}%
-    %
-    \MakeLowercase{\thmtype}~\ref{#1}\IfStrEq{\thmname}{}{}{\space(\thmname)}%
+    \begingroup
+        \expandafter\extractlabelnames
+        \expandafter{\csname r@#1\endcsname}{thmtype}{thmname}%
+        %
+        \hyperref[#1]{\MakeLowercase{\thmtype}~\ref{#1}\IfStrEq{\thmname}{}{}{\space(\thmname)}}%
+    \endgroup
 }
 \newcommand{\Thmref}[1]{%
     %Expected input:
     %{6.12}{75}{Theorem|||Cayley-Hamilton Theorem}{theorem.6.12}{}
-    \expandafter\extractlabelnames
-    \expandafter{\csname r@#1\endcsname}{thmtype}{thmname}%
-    %
-    \thmtype~\ref{#1}\IfStrEq{\thmname}{}{}{\space(\thmname)}%
+    \begingroup
+        \expandafter\extractlabelnames
+        \expandafter{\csname r@#1\endcsname}{thmtype}{thmname}%
+        %
+        \hyperref[#1]{\thmtype~\ref{#1}\IfStrEq{\thmname}{}{}{\space(\thmname)}}%
+    \endgroup
 }
 % Usage:
 % \extractlabelnames{<input>}{<macro for type>}{<macro for name>}
@@ -288,6 +292,16 @@
     % Assign to user macros
     \expandafter\def\csname #2\endcsname{\typepart}%
     \expandafter\def\csname #3\endcsname{\namepart}%
+}
+\newcommand{\eqnref}[1]{%
+    \begingroup
+        \hyperref[#1]{equation~\ref{#1}}%
+    \endgroup
+}
+\newcommand{\Eqnref}[1]{%
+    \begingroup
+        \hyperref[#1]{Equation~\ref{#1}}%
+    \endgroup
 }
 \makeatother
 
