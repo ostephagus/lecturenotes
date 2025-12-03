@@ -257,6 +257,40 @@
     *Note that the content of this subsection is \textbf{non-examinable}.\par
 }
 
+\makeatletter
+\newcommand{\thmref}[1]{%
+    %Expected input:
+    %{6.12}{75}{Theorem|||Cayley-Hamilton Theorem}{theorem.6.12}{}
+    \expandafter\extractlabelnames
+    \expandafter{\csname r@#1\endcsname}{thmtype}{thmname}%
+    %
+    \MakeLowercase{\thmtype}~\ref{#1}\IfStrEq{\thmname}{}{}{\space(\thmname)}%
+}
+\newcommand{\Thmref}[1]{%
+    %Expected input:
+    %{6.12}{75}{Theorem|||Cayley-Hamilton Theorem}{theorem.6.12}{}
+    \expandafter\extractlabelnames
+    \expandafter{\csname r@#1\endcsname}{thmtype}{thmname}%
+    %
+    \thmtype~\ref{#1}\IfStrEq{\thmname}{}{}{\space(\thmname)}%
+}
+% Usage:
+% \extractlabelnames{<input>}{<macro for type>}{<macro for name>}
+\newcommand{\extractlabelnames}[3]{%
+    % Extract only the "type|||name" portion (the 3rd { ... } group)
+    \StrFindGroup{#1}{3}[\labelname]%
+    % Remove the leading and trailing literal braces
+    \StrRemoveBraces{\labelname}[\labelname]%
+    %
+    % Now split on |||
+    \StrCut{\labelname}{\LABELSEP}{\typepart}{\namepart}%
+    %
+    % Assign to user macros
+    \expandafter\def\csname #2\endcsname{\typepart}%
+    \expandafter\def\csname #3\endcsname{\namepart}%
+}
+\makeatother
+
 % Useful characters
 \newcommand{\contradiction}{\tikz[baseline, x=0.22em, y=0.22em, line width=0.032em]\draw (0,2.83)--(2.83,0) (0.71,3.54)--(3.54,0.71) (0,0.71)--(2.83,3.54) (0.71,0)--(3.54,2.83);}
 \newcommand{\tick}{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;} 
