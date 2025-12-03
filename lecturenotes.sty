@@ -70,7 +70,6 @@
     \noindent\makebox[0.5cm][l]{\color{leftbarcolor}\rule{0.5cm}{1pt}} % Short horizontal bar
     \par
 }
-\makeatother
 
 \newenvironment{indentenvironment}[1][\parindent]{
     \begin{adjustwidth}{#1}{}
@@ -99,7 +98,6 @@
     \end{theoremlike}
 }
 
-\makeatletter
 \newenvironment{corollary}[1][] 
 {
     \refstepcounter{corollary}
@@ -117,7 +115,6 @@
 {
     \end{leftbartext}
 }
-\makeatother
 
 % The symbol to use to end a proof. use \renewcommand to change the symbol.
 \newcommand{\proofend}{$\Box$}
@@ -142,6 +139,8 @@
     \par\medskip
     \noindent
     \underline{\textbf{Example \theexample}\ifstrempty{#1}{}{ (#1)}:}
+    \def\theoremtype{Example}
+    \edef\@currentlabelname{\theoremtype\LABELSEP#1}
     \begin{indentenvironment}
 }{
     \end{indentenvironment}
@@ -152,6 +151,8 @@
     \par\medskip
     \noindent
     \underline{\textbf{Definition \thedefinition} (#1):}
+    \def\theoremtype{Definition}
+    \edef\@currentlabelname{\theoremtype\LABELSEP#1}
     \begin{indentenvironment}
 }{
     \end{indentenvironment}
@@ -257,7 +258,6 @@
     *Note that the content of this subsection is \textbf{non-examinable}.\par
 }
 
-\makeatletter
 \newcommand{\thmref}[1]{%
     %Expected input:
     %{6.12}{75}{Theorem|||Cayley-Hamilton Theorem}{theorem.6.12}{}
