@@ -32,6 +32,7 @@
 \newcounter{case}[corollary]
 \newcounter{remark}
 
+\def\LABELSEP{|||} % Separator to encode label name and enclosing environment
 
 % Definitions for left bar environment
 \setlength{\FrameSep}{0pt} % No gap between bar and content
@@ -48,7 +49,7 @@
     \vspace{0.5em} % Extend bar downwards
     \endMakeFramed
 }
-
+\makeatletter
 % Define a template environment for theorem, proposition, etc.
 \newenvironment{theoremlike}[2][]
 {
@@ -57,6 +58,9 @@
     \noindent
     \underline{\textbf{#2 \thetheorem}\ifstrempty{#1}{}{ (#1)}:}
     \ifstrempty{#1}{}{\vspace{0.2em}}
+    
+
+    \edef\@currentlabelname{#2\LABELSEP#1} % TESTING
     \begin{leftbartext} % Add a black bar on the left
         \noindent
 }
@@ -94,7 +98,6 @@
     \end{theoremlike}
 }
 
-
 \newenvironment{corollary}[1][] 
 {
     \refstepcounter{corollary}
@@ -102,6 +105,10 @@
     \noindent
     \underline{\textbf{Corollary \thecorollary}\ifstrempty{#1}{}{ (#1)}:}
     \ifstrempty{#1}{}{\vspace{0.2em}}
+
+    \def\theoremtype{Corollary}
+    \edef\@currentlabelname{\theoremtype\LABELSEP#1}
+
     \begin{leftbartext} % Add a black bar on the left
         \noindent
 }
@@ -132,6 +139,8 @@
     \par\medskip
     \noindent
     \underline{\textbf{Example \theexample}\ifstrempty{#1}{}{ (#1)}:}
+    \def\theoremtype{Example}
+    \edef\@currentlabelname{\theoremtype\LABELSEP#1}
     \begin{indentenvironment}
 }{
     \end{indentenvironment}
@@ -142,6 +151,8 @@
     \par\medskip
     \noindent
     \underline{\textbf{Definition \thedefinition} (#1):}
+    \def\theoremtype{Definition}
+    \edef\@currentlabelname{\theoremtype\LABELSEP#1}
     \begin{indentenvironment}
 }{
     \end{indentenvironment}
@@ -246,6 +257,39 @@
     \subsection{#1*}
     *Note that the content of this subsection is \textbf{non-examinable}.\par
 }
+
+\newcommand{\thmref}[1]{%
+    %Expected input:
+    %{6.12}{75}{Theorem|||Cayley-Hamilton Theorem}{theorem.6.12}{}
+    \expandafter\extractlabelnames
+    \expandafter{\csname r@#1\endcsname}{thmtype}{thmname}%
+    %
+    \MakeLowercase{\thmtype}~\ref{#1}\IfStrEq{\thmname}{}{}{\space(\thmname)}%
+}
+\newcommand{\Thmref}[1]{%
+    %Expected input:
+    %{6.12}{75}{Theorem|||Cayley-Hamilton Theorem}{theorem.6.12}{}
+    \expandafter\extractlabelnames
+    \expandafter{\csname r@#1\endcsname}{thmtype}{thmname}%
+    %
+    \thmtype~\ref{#1}\IfStrEq{\thmname}{}{}{\space(\thmname)}%
+}
+% Usage:
+% \extractlabelnames{<input>}{<macro for type>}{<macro for name>}
+\newcommand{\extractlabelnames}[3]{%
+    % Extract only the "type|||name" portion (the 3rd { ... } group)
+    \StrFindGroup{#1}{3}[\labelname]%
+    % Remove the leading and trailing literal braces
+    \StrRemoveBraces{\labelname}[\labelname]%
+    %
+    % Now split on |||
+    \StrCut{\labelname}{\LABELSEP}{\typepart}{\namepart}%
+    %
+    % Assign to user macros
+    \expandafter\def\csname #2\endcsname{\typepart}%
+    \expandafter\def\csname #3\endcsname{\namepart}%
+}
+\makeatother
 
 % Useful characters
 \newcommand{\contradiction}{\tikz[baseline, x=0.22em, y=0.22em, line width=0.032em]\draw (0,2.83)--(2.83,0) (0.71,3.54)--(3.54,0.71) (0,0.71)--(2.83,3.54) (0.71,0)--(3.54,2.83);}
