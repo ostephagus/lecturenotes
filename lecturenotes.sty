@@ -32,6 +32,7 @@
 \newcounter{case}[corollary]
 \newcounter{remark}
 
+\def\LABELSEP{|||} % Separator to encode label name and enclosing environment
 
 % Definitions for left bar environment
 \setlength{\FrameSep}{0pt} % No gap between bar and content
@@ -48,7 +49,7 @@
     \vspace{0.5em} % Extend bar downwards
     \endMakeFramed
 }
-
+\makeatletter
 % Define a template environment for theorem, proposition, etc.
 \newenvironment{theoremlike}[2][]
 {
@@ -57,6 +58,9 @@
     \noindent
     \underline{\textbf{#2 \thetheorem}\ifstrempty{#1}{}{ (#1)}:}
     \ifstrempty{#1}{}{\vspace{0.2em}}
+    
+
+    \edef\@currentlabelname{#2\LABELSEP#1} % TESTING
     \begin{leftbartext} % Add a black bar on the left
         \noindent
 }
@@ -66,6 +70,7 @@
     \noindent\makebox[0.5cm][l]{\color{leftbarcolor}\rule{0.5cm}{1pt}} % Short horizontal bar
     \par
 }
+\makeatother
 
 \newenvironment{indentenvironment}[1][\parindent]{
     \begin{adjustwidth}{#1}{}
@@ -94,7 +99,7 @@
     \end{theoremlike}
 }
 
-
+\makeatletter
 \newenvironment{corollary}[1][] 
 {
     \refstepcounter{corollary}
@@ -102,12 +107,17 @@
     \noindent
     \underline{\textbf{Corollary \thecorollary}\ifstrempty{#1}{}{ (#1)}:}
     \ifstrempty{#1}{}{\vspace{0.2em}}
+
+    \def\theoremtype{Corollary}
+    \edef\@currentlabelname{\theoremtype\LABELSEP#1}
+
     \begin{leftbartext} % Add a black bar on the left
         \noindent
 }
 {
     \end{leftbartext}
 }
+\makeatother
 
 % The symbol to use to end a proof. use \renewcommand to change the symbol.
 \newcommand{\proofend}{$\Box$}
